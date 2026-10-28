@@ -9,7 +9,7 @@ window.DPN_CHAPTERS = [
         // bản đồ chọn cửa: vị trí 5 điểm dừng theo % ảnh
         map: 'assets/ui/map_tap1.webp', pins: [[15.2, 73.8], [32.9, 51.8], [52.6, 46.8], [64.4, 33.0], [87.5, 26.0]],
         cuas: [
-        { id: 't1c1', name: 'Bãi sông', goal: 'Tới chòi canh, làm quen chạy, nhảy, bùn lún, đỉa' },
+        { id: 't1c1', name: 'Bãi sông', goal: 'Tới chòi canh: làm quen chạy, nhảy, bùn lún, đỉa, gỗ trôi và cá sấu. Có 3 mảnh nhật ký giấu trên cao.' },
         { id: 't1c2', name: 'Bãi bồi bùn lún', goal: 'Vượt dải bùn dài, lót ván qua bùn' },
         { id: 't1c3', name: 'Lội sông', goal: 'Bơi qua nhánh sông, tránh đỉa dưới nước' },
         { id: 't1c4', name: 'Ổ cá sấu lúc hoàng hôn', goal: 'Đi qua bãi trứng, đọc bong bóng báo trước' },

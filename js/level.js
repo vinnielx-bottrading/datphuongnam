@@ -14,6 +14,8 @@
       this.ents.push(...def.leeches.map(([a, b]) => new E.Leech(a, b, this.gy)));
       this.items = def.items.map(([k, x, y]) => new E.Item(k, x, y));
       this.riceTotal = this.items.filter(i => i.kind === 'rice').length;
+      this.pages = 0; this.pageGot = []; this.pagesTotal = 0;
+      for (const i of this.items) if (i.kind === 'page') i.pi = this.pagesTotal++;
       this.cps = def.checkpoints.map(x => new E.Checkpoint(x, this.gy));
       this.checkpoint = { x: def.start.x, y: this.gy };
       this.player = new E.Player(def.start.x, this.gy);

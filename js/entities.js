@@ -114,13 +114,21 @@
       if (E.overlap(p, b) && !p.dead) {
         this.taken = true; E.spawnFx('fx_sparkle', this.x, this.y, { scale: 0.9 });
         if (this.kind === 'gourd') { p.hp = Math.min(p.maxHp, p.hp + 1); L.toast('Bầu nước: hồi 1 sức.'); }
+        else if (this.kind === 'page') { L.pages += 1; L.pageGot.push(this.pi); L.toast(`Mảnh nhật ký ${L.pages}/${L.pagesTotal}!`); E.spawnFx('fx_sparkle', this.x, this.y, { scale: 1.4 }); }
         else L.rice += 1;
-        L.sound && L.sound(this.kind === 'gourd' ? 'gourd' : 'pick');
+        L.sound && L.sound(this.kind === 'rice' ? 'pick' : 'gourd');
       }
     }
     draw(ctx) {
       if (this.taken) return;
       const y = this.y + Math.sin(this.t * 3) * 6;
+      if (this.kind === 'page') {
+        // mảnh nhật ký: quầng sáng vàng để nhìn thấy từ xa
+        const r = 34 + Math.sin(this.t * 4) * 5, g = ctx.createRadialGradient(this.x, y, 4, this.x, y, r);
+        g.addColorStop(0, 'rgba(255,226,120,.85)'); g.addColorStop(1, 'rgba(255,226,120,0)');
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(this.x, y, r, 0, 7); ctx.fill();
+        return E.drawFrame(ctx, 'item_page', 0, this.x, y, 0.32);
+      }
       E.drawFrame(ctx, this.kind === 'gourd' ? 'item_gourd' : 'item_riceball', 0, this.x, y, this.kind === 'gourd' ? 0.55 : 0.5);
     }
   };

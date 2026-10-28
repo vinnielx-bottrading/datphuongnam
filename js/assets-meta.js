@@ -1,5 +1,6 @@
 // Tự sinh bởi tools/build_assets.py + build_new2.py – kích thước & số khung của từng ảnh
 window.ASSET_META = {
+ "item_page": { "w": 180, "h": 167, "n": 1, "anchor": "center", "src": "ui/icon_journal.webp" },
  "nam_idle": {
   "w": 90,
   "h": 190,

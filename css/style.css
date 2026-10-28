@@ -288,3 +288,21 @@ button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
   .d-qr .qr { width: 150px; } .d-qr figcaption { max-width: 150px; font-size: 11px; }
   .d-custom { margin-top: 6px; } .d-custom input { padding: 6px 10px; font-size: 15px; }
 }
+
+/* ===== sao & nhật ký ===== */
+.win-stars { list-style: none; padding: 0; margin: 6px 0 4px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.win-stars li { display: grid; justify-items: center; gap: 0; padding: 6px 4px; border-radius: 10px; background: var(--sand); color: var(--muted); }
+.win-stars i { font-style: normal; font-size: 30px; line-height: 1; color: #B9A88F; }
+.win-stars li.on { background: #FFF1C4; color: var(--ink); }
+.win-stars li.on i { color: #E8A317; text-shadow: 0 2px 0 #8A5A10; }
+.win-stars b { font-size: 15px; font-variant-numeric: tabular-nums; }
+.win-stars span { font-size: 11px; line-height: 1.2; text-align: center; }
+.pin-stars { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 2px; font-size: 12px; color: #FFD25A; text-shadow: 0 1px 2px #2A1C14; white-space: nowrap; letter-spacing: 1px; }
+.cua .stars { color: #C27C0E; letter-spacing: 1px; }
+.j-h { font-size: 17px; margin: 14px 0 6px; } .j-h small { color: var(--muted); font-weight: 600; font-size: 13px; }
+.j-list { margin: 0; padding-left: 22px; display: grid; gap: 8px; line-height: 1.5; font-size: 15px; }
+.j-list li.locked { color: var(--muted); font-style: italic; }
+@media (max-height: 480px) {
+  .win-stars i { font-size: 22px; } .win-stars span { display: none; } .win-stars { margin: 2px 0; }
+  .win-card #winStats { display: none; }
+}

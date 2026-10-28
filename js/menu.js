@@ -9,11 +9,20 @@
   try { prog = Object.assign(prog, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* trình duyệt chặn lưu: chơi bình thường */ }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (e) { } };
   E.progress = prog;
-  E.saveResult = function (id, r) {
-    const old = prog.done[id];
-    prog.done[id] = { rice: Math.max(r.rice, old ? old.rice : 0), total: r.total, time: old ? Math.min(old.time, r.time) : r.time };
-    prog.last = id; save();
+  // 3 sao: ≥80% cơm nắm · đủ mảnh nhật ký · qua dưới thời gian chuẩn (par)
+  E.starsOf = function (def, r) {
+    return [r.rice >= Math.ceil(r.total * 0.8), r.ptotal > 0 && r.pages >= r.ptotal, !!def.par && r.time <= def.par];
   };
+  E.saveResult = function (id, r) {
+    const old = prog.done[id] || {}, def = window.DPN_LEVELS[id] || {};
+    const st = E.starsOf(def, r), os = old.stars || [false, false, false];
+    const got = [...new Set([...(old.pageGot || []), ...(r.pageGot || [])])].sort();
+    prog.done[id] = { rice: Math.max(r.rice, old.rice || 0), total: r.total, time: old.time ? Math.min(old.time, r.time) : r.time,
+      pageGot: got, ptotal: r.ptotal, stars: st.map((v, i) => v || !!os[i]) };
+    prog.last = id; save();
+    return st;
+  };
+  const starStr = d => d && d.stars ? d.stars.map(v => v ? '★' : '☆').join('') : '';
   E.setLast = id => { prog.last = id; save(); };
   E.setSound = on => { prog.sound = on; save(); };
   E.setMusic = on => { prog.music = on; save(); E.music && E.music.refresh(); };
@@ -48,7 +57,8 @@
       $('introName').textContent = c.boss ? `Trùm – ${c.name}` : `Cửa ${i + 1} – ${c.name}`;
       $('introGoal').textContent = c.goal;
       const r = prog.done[id];
-      $('introBest').textContent = r ? `Kỷ lục: ${r.rice}/${r.total} cơm nắm · ${fmt(r.time)}` : '';
+      const def = window.DPN_LEVELS[id] || {};
+      $('introBest').textContent = r ? `Kỷ lục: ${starStr(r)} · ${r.rice}/${r.total} cơm nắm · ${fmt(r.time)}` : (def.par ? `Mục tiêu 3 sao: ≥80% cơm nắm · đủ mảnh nhật ký · dưới ${fmt(def.par)}` : '');
       $('btnPlay').onclick = () => E.startLevel(id);
     },
     c1list() { this.chapter('c1'); },
@@ -91,6 +101,7 @@
           pin.className = 'pin' + (done ? ' done' : '') + (ok ? '' : ' locked') + (cua.boss ? ' boss' : '');
           pin.style.left = x + '%'; pin.style.top = y + '%';
           pin.textContent = cua.boss ? '★' : i + 1;
+          if (done && done.stars) { const s = document.createElement('span'); s.className = 'pin-stars'; s.textContent = starStr(done); pin.appendChild(s); }
           pin.setAttribute('aria-label', (cua.boss ? 'Trùm – ' : `Cửa ${i + 1} – `) + cua.name + (ok ? '' : ' (chưa mở)'));
           if (ok) pin.onclick = () => E.menu.intro(cua.id); else pin.disabled = true;
           map.appendChild(pin);
@@ -104,12 +115,23 @@
         const ok = unlocked(cua), done = prog.done[cua.id];
         b.className = 'cua' + (done ? ' done' : '') + (ok ? '' : ' locked') + (cua.boss ? ' boss' : '');
         b.innerHTML = `<span class="cua-n">${cua.boss ? 'Trùm' : 'Cửa ' + (i + 1)}</span><b>${cua.name}</b>
-          <small>${done ? `✓ ${done.rice}/${done.total} cơm nắm` : ok ? 'Sẵn sàng' : playable(cua) ? 'Qua cửa trước để mở' : 'Đang xây dựng'}</small>`;
+          <small>${done ? `<span class="stars">${starStr(done)}</span> ${done.rice}/${done.total} cơm nắm` : ok ? 'Sẵn sàng' : playable(cua) ? 'Qua cửa trước để mở' : 'Đang xây dựng'}</small>`;
         if (ok) b.onclick = () => E.menu.intro(cua.id); else b.disabled = true;
         grid.appendChild(b);
       });
       row.appendChild(grid); box.appendChild(row);
     }
+  }
+
+  function journalHtml() {
+    let out = '';
+    for (const c of allCuas()) {
+      const def = window.DPN_LEVELS[c.id]; if (!def || !def.journal) continue;
+      const got = (prog.done[c.id] && prog.done[c.id].pageGot) || [];
+      out += `<h3 class="j-h">Tập ${c.tap.n} · ${c.name} <small>${got.length}/${def.journal.length} mảnh</small></h3><ol class="j-list">` +
+        def.journal.map((t, i) => got.includes(i) ? `<li>${t}</li>` : '<li class="locked">Mảnh nhật ký chưa tìm thấy…</li>').join('') + '</ol>';
+    }
+    return out || '<p class="soon">Tìm mảnh nhật ký giấu trong các cửa để mở trang mới.</p>';
   }
 
   // ---------- Bảng phụ (Nhật ký, Vật phẩm, Xóm làng, Thành tích, Nhân vật) ----------
@@ -118,7 +140,7 @@
     const rice = done.reduce((a, r) => a + r.rice, 0);
     const T = {
       journal: ['Nhật ký', `<p>Nam theo cha mẹ xuống ghe rời quê cũ, xuôi về miền đất mới phương Nam. Bãi sông hoang vắng, bùn lầy, đỉa bám và cá sấu rình dưới nước.</p>
-        <p>Mỗi cửa vượt qua sẽ mở thêm một trang nhật ký của Nam.</p>`],
+        ${journalHtml()}`],
       items: ['Vật phẩm', `<ul class="stat"><li><img src="assets/sprites/item_riceball.png" alt=""> Cơm nắm đã nhặt <b>${rice}</b></li>
         <li><img src="assets/sprites/item_gourd.png" alt=""> Bầu nước: hồi 1 sức khi nhặt</li></ul><p class="soon">Túi đồ, giáo, dao rựa, đuốc sẽ mở ở các tập sau.</p>`],
       village: ['Xóm làng', '<p>Xóm làng sẽ được dựng dần khi Nam vượt qua các tập của Chương 1: chòi canh, nhà sàn, bến đò, ruộng lúa.</p><p class="soon">Sắp có</p>'],

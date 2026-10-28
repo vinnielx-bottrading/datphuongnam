@@ -36,11 +36,12 @@
   function hud() {
     const p = level.player;
     ctx.save();
-    ctx.fillStyle = 'rgba(42,28,20,.55)'; ctx.beginPath(); ctx.roundRect(16, 14, 360, 64, 14); ctx.fill();
+    ctx.fillStyle = 'rgba(42,28,20,.55)'; ctx.beginPath(); ctx.roundRect(16, 14, 470, 64, 14); ctx.fill();
     for (let i = 0; i < p.maxHp; i++) E.drawFrame(ctx, 'item_gourd', 0, 50 + i * 50, 46, 0.48, false, i < p.hp ? 1 : 0.25);
     E.drawFrame(ctx, 'item_riceball', 0, 222, 46, 0.42);
     ctx.fillStyle = '#FCF8F1'; ctx.font = '800 26px "Be Vietnam Pro",sans-serif'; ctx.textAlign = 'left';
     ctx.fillText(level.rice + ' / ' + level.riceTotal, 254, 56);
+    if (level.pagesTotal) { E.drawFrame(ctx, 'item_page', 0, 388, 46, 0.24); ctx.fillText(level.pages + ' / ' + level.pagesTotal, 414, 56); }
     ctx.textAlign = 'right'; ctx.font = '700 20px "Be Vietnam Pro",sans-serif';
     ctx.fillText(level.def.title + ' · ' + level.def.name, E.VIEW_W - 128, 42);
     // thanh tiến độ tới chòi canh
@@ -82,9 +83,12 @@
     if (p.win) {
       state = 'win';
       const sec = Math.round(level.time);
-      E.saveResult(levelId, { rice: level.rice, total: level.riceTotal, time: level.time });
+      const st = E.saveResult(levelId, { rice: level.rice, total: level.riceTotal, time: level.time, pageGot: level.pageGot, pages: level.pages, ptotal: level.pagesTotal });
+      const par = level.def.par || 0, fm = s => Math.floor(s / 60) + ':' + String(Math.round(s % 60)).padStart(2, '0');
+      $('winStars').innerHTML = [['Cơm nắm ≥ 80%', `${level.rice}/${level.riceTotal}`], ['Mảnh nhật ký', `${level.pages}/${level.pagesTotal}`], ['Dưới ' + fm(par), fm(level.time)]]
+        .map(([t, v], i) => `<li class="${st[i] ? 'on' : ''}"><i>${st[i] ? '★' : '☆'}</i><b>${v}</b><span>${t}</span></li>`).join('');
       $('winTitle').textContent = 'Qua ' + level.def.title.replace('Tập 1 · ', '') + ' – ' + level.def.name + '!';
-      $('winStats').textContent = `Thu ${level.rice}/${level.riceTotal} cơm nắm · hạ ${level.score} con đỉa · ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+      $('winStats').textContent = `Hạ ${level.score} con đỉa`;
       const nx = E.menu.next(levelId);
       $('winNext').innerHTML = nx
         ? `<small>${nx.playable ? 'Cửa tiếp theo' : 'Cửa tiếp theo · đang xây dựng'}</small><b>${nx.boss ? 'Trùm' : 'Cửa ' + (nx.index + 1)} – ${nx.name}</b><span>${nx.goal || ''}</span>`
