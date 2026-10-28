@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-view="loading">
+<script src="https://vinhlamgame.vercel.app/vlg.js" data-game="dat-phuong-nam" defer></script>
 <main class="stage">
   <canvas id="game" width="1280" height="720" aria-label="Màn chơi Đất Phương Nam"></canvas>
 
@@ -44,6 +45,7 @@
       <button type="button" data-panel="village"><img src="assets/ui/icon_village.webp" alt=""><span>Xóm làng</span></button>
       <button type="button" data-panel="achieve"><img src="assets/ui/icon_achieve.webp" alt=""><span>Thành tích</span></button>
       <button type="button" data-panel="chars"><img src="assets/ui/icon_chars.webp" alt=""><span>Nhân vật</span></button>
+      <button type="button" class="tile-donate" id="btnDonate"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg><span>Ủng hộ</span></button>
     </nav>
   </section>
 
@@ -86,6 +88,11 @@
     </div>
   </section>
 
+  <!-- ===== Ủng hộ ===== -->
+  <section class="screen" id="donate" hidden>
+    <div class="card wide"><div data-donate></div><button type="button" class="primary" data-back="home">Đóng</button></div>
+  </section>
+
   <!-- ===== Bảng phụ ===== -->
   <section class="screen" id="panel" hidden>
     <div class="card wide"><h2 id="panelTitle"></h2><div id="panelBody" class="panel-body"></div><button type="button" class="primary" data-back="home">Đóng</button></div>
@@ -96,8 +103,13 @@
     <div class="card"><h2>Tạm dừng</h2><button type="button" class="primary" id="btnResume">Chơi tiếp</button><button type="button" id="btnRestart">Chơi lại cửa này</button><button type="button" id="btnQuit">Về chọn cửa</button></div>
   </section>
   <section class="screen" id="win" hidden>
-    <div class="card"><p class="kicker">Hoàn thành</p><h2 id="winTitle">Qua cửa!</h2><p id="winStats"></p>
-      <button type="button" class="primary" id="btnWinNext">Về chọn cửa</button><button type="button" id="btnWinAgain">Chơi lại</button></div>
+    <div class="win-wrap">
+      <div class="card win-card"><p class="kicker">Hoàn thành</p><h2 id="winTitle">Qua cửa!</h2><p id="winStats"></p>
+        <div class="next-cua" id="winNext"></div>
+        <button type="button" class="primary" id="btnWinNext">Vào cửa tiếp theo</button>
+        <div class="row2"><button type="button" id="btnWinAgain">Chơi lại</button><button type="button" id="btnWinMap">Bản đồ</button></div></div>
+      <aside class="card" data-donate="compact"></aside>
+    </div>
   </section>
   <section class="screen" id="over" hidden>
     <div class="card"><h2>Nam kiệt sức rồi</h2><p>Nghỉ một chút rồi thử lại nhé. Mẹo: thấy bong bóng thì nhảy đi ngay.</p>
@@ -116,6 +128,8 @@
 <script src="js/chapters.js"></script>
 <script src="js/sfx.js"></script>
 <script src="js/music.js"></script>
+<script src="js/lib/qrcode.js"></script>
+<script src="js/donate.js"></script>
 <script src="js/menu.js"></script>
 <script src="js/main.js"></script>
 </body>

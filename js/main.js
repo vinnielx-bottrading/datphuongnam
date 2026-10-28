@@ -25,6 +25,7 @@
   function start() {
     const def = window.DPN_LEVELS[levelId] || window.DPN_LEVELS.t1c1;
     E.ambKey = def.ambience || 'day';
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     level = new E.Level(def); level.sound = sound; E.fx.length = 0;
     const hurt = level.player.hurt.bind(level.player);
     level.player.hurt = (x, L) => { const r = hurt(x, L); if (r) sound('hurt'); return r; };
@@ -57,7 +58,7 @@
   }
 
   // ---------- vòng lặp ----------
-  let last = performance.now(), endT = 0;
+  let last = performance.now(), endT = 0, nextId = null;
   function loop(now) {
     const dt = Math.min(0.033, (now - last) / 1000); last = now;
     if (state === 'play' || state === 'end') {
@@ -69,7 +70,8 @@
         if (state === 'end' && (endT += dt) > 1.4) finish();
       }
     } else if (state === 'pause' && E.input.hit('pause')) { state = 'play'; show(null); }
-    else if ((state === 'win' || state === 'over') && E.input.hit('ok')) start();
+    else if (state === 'win' && E.input.hit('ok')) $('btnWinNext').click();
+    else if (state === 'over' && E.input.hit('ok')) start();
     if (level && state !== 'menu') { level.draw(ctx); hud(); }
     E.input.endFrame();
     requestAnimationFrame(loop);
@@ -83,6 +85,12 @@
       E.saveResult(levelId, { rice: level.rice, total: level.riceTotal, time: level.time });
       $('winTitle').textContent = 'Qua ' + level.def.title.replace('Tập 1 · ', '') + ' – ' + level.def.name + '!';
       $('winStats').textContent = `Thu ${level.rice}/${level.riceTotal} cơm nắm · hạ ${level.score} con đỉa · ${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+      const nx = E.menu.next(levelId);
+      $('winNext').innerHTML = nx
+        ? `<small>${nx.playable ? 'Cửa tiếp theo' : 'Cửa tiếp theo · đang xây dựng'}</small><b>${nx.boss ? 'Trùm' : 'Cửa ' + (nx.index + 1)} – ${nx.name}</b><span>${nx.goal || ''}</span>`
+        : '<b>Bạn đã qua hết các cửa hiện có!</b><span>Cửa mới đang được làm tiếp.</span>';
+      nextId = nx && nx.playable ? nx.id : null;
+      $('btnWinNext').textContent = nextId ? 'Vào cửa tiếp theo' : 'Về bản đồ';
       show('win');
     } else { state = 'over'; show('over'); }
   }
@@ -92,7 +100,8 @@
   const toMenu = () => { state = 'menu'; E.menu.chapter('c1'); };
   $('btnResume').addEventListener('click', () => { state = 'play'; show(null); });
   $('btnRestart').addEventListener('click', start); $('btnWinAgain').addEventListener('click', start); $('btnOverAgain').addEventListener('click', start);
-  $('btnQuit').addEventListener('click', toMenu); $('btnWinNext').addEventListener('click', toMenu); $('btnOverQuit').addEventListener('click', toMenu);
+  $('btnQuit').addEventListener('click', toMenu); $('btnWinNext').addEventListener('click', () => { if (nextId) { state = 'menu'; E.menu.intro(nextId); } else toMenu(); });
+  $('btnWinMap').addEventListener('click', toMenu); $('btnOverQuit').addEventListener('click', toMenu);
   $('btnPause').addEventListener('click', () => { if (state === 'play') { state = 'pause'; show('pause'); } });
   const muteLabel = () => { $('btnMute').classList.toggle('off', muted()); };
   $('btnMute').addEventListener('click', () => { E.setSound(muted()); muteLabel(); }); muteLabel();

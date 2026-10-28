@@ -49,7 +49,7 @@
     screen(id) {
       if (id && E.sfx) E.sfx.ambience(null);
       if (id === 'win') { const fresh = !afterWin || want !== 'victory'; afterWin = true; set('victory', fresh); return; }
-      if (id === 'chapters' || id === 'chapter' || id === 'intro') { set(afterWin ? 'victory' : 'welcome'); return; }
+      if (id === 'chapters' || id === 'chapter' || id === 'intro' || id === 'donate') { set(afterWin ? 'victory' : 'welcome'); return; }
       if (id === 'home' || id === 'settings' || id === 'panel' || id === 'loading') { afterWin = false; set('welcome'); return; }
       // đang chơi, tạm dừng, thua
       if (!id) afterWin = false;

@@ -22,6 +22,8 @@ js/levels/tap1_cua1.js  dữ liệu Cửa 1 (đất, sông, bùn, đỉa, vật 
 js/chapters.js        cấu trúc Chương → Tập → Cửa (thêm cửa mới ở đây)
 js/sfx.js             âm thanh tạo bằng code: hiệu ứng + âm nền (nước, gió, chim, côn trùng)
 js/music.js           nhạc nền menu (welcome) và nhạc thắng (victory)
+js/donate.js          ủng hộ: tạo mã VietQR theo số tiền (50k/100k/200k/1 triệu/tùy ý)
+js/lib/qrcode.js      thư viện vẽ QR (MIT)
 js/menu.js            màn hình chính, chọn chương, cài đặt, lưu tiến độ
 js/main.js            vòng lặp, HUD, âm thanh, trạng thái game
 assets/ui/            ảnh màn hình chính (tạm dùng A02 + A03 đến khi có DPN_UI_KV_BG)

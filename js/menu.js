@@ -54,6 +54,12 @@
     c1list() { this.chapter('c1'); },
     settings() { go('settings'); $('optSound').checked = prog.sound; $('optMusic').checked = prog.music; },
     panel(kind) { go('panel'); renderPanel(kind); },
+    donate() { go('donate'); },
+    // cửa kế tiếp sau id (kèm cờ chơi được hay chưa)
+    next(id) {
+      const list = allCuas(), i = list.findIndex(x => x.id === id), n = list[i + 1];
+      return n ? Object.assign({ playable: playable(n), index: n.tap.cuas.findIndex(x => x.id === n.id) }, n) : null;
+    },
     go
   };
 
@@ -127,6 +133,7 @@
   // ---------- nút ----------
   $('btnStart').onclick = e => { const id = e.currentTarget.dataset.cua; if (id) E.menu.intro(id); };
   $('btnChapters').onclick = () => E.menu.chapters();
+  $('btnDonate').onclick = () => E.menu.donate();
   $('btnContinue').onclick = () => prog.last && E.menu.intro(prog.last);
   $('btnSettings').onclick = $('btnSettings2').onclick = () => E.menu.settings();
   for (const b of document.querySelectorAll('[data-panel]')) b.onclick = () => E.menu.panel(b.dataset.panel);

@@ -45,6 +45,7 @@
     Enter: 'ok', Escape: 'pause', KeyP: 'pause' };
   addEventListener('keydown', e => {
     const k = map[e.code]; if (!k) return;
+    if (e.target && e.target.closest && e.target.closest('input, textarea, button')) return; // để ô nhập và nút dùng phím bình thường
     if (!keys[k]) pressed[k] = true;
     keys[k] = true; e.preventDefault();
   });
